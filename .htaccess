@@ -1,0 +1,34 @@
+#
+# &HybridCMS Generated .HTACCESS
+#
+ 
+# Protect files and directories from prying eyes.
+<FilesMatch ".*\.(sql|config|ini|md)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+ 
+# Don't show directory listings
+Options -Indexes
+
+# Make Application handle any 404 errors.
+ErrorDocument 404 /index.php
+ 
+# Force simple error message for requests for non-existent favicon.ico.
+<Files favicon.ico>
+  ErrorDocument 404 "The requested file favicon.ico was not found."
+</Files>
+ 
+# Set the default handler.
+DirectoryIndex index.php
+ 
+# URL Rewriting
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+
+  # Rewrite URLs of the form 'x' to the form 'index.php/x'.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !=/favicon.ico
+  RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+</IfModule>
