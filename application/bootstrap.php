@@ -25,6 +25,8 @@
     }
     
     # Application Session
+    ini_set('session.hash_function', 'whirlpool');
+    
     if(!session_id()) {
         session_start();
     }
@@ -43,6 +45,13 @@
     
     # Application Configuration
     $HybridRegistry->config = new Library\Configuration();
+    
+    # Application Input Layer
+    $input = file_get_contents('php://input');
+    $HybridRegistry->requests = (array) json_decode($input, true);
+    
+    # Update POST Data.
+    $_POST = array_merge($_POST, $HybridRegistry->requests);
     
     # Application Database Initialization.
     $database = $HybridRegistry->config->loadFile('connection');
@@ -63,10 +72,3 @@
     }
     
     $HybridRegistry->database->connect($database);
-    
-    # Application Controller.
-
-    # Application Arguments.
-
-    # Run Application!
-    

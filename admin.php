@@ -16,7 +16,4 @@
     require( dirname(__FILE__) . '/application/bootstrap.php' );
 
     # Application Controller.
-    $HybridRegistry->controller = new HybridCMS\Application\Controller\Main( $HybridRegistry );
-
-    # Run Application!
-    $HybridRegistry->controller->run();
+    $HybridRegistry->controller = new HybridCMS\Application\Controller\Admin( $HybridRegistry );

@@ -5,7 +5,6 @@
 
   - Multi-Emulator and Multi-Database (Driver) Support 
   - Object Oriented Model-View-Controller Programming Architecture
-  - Easy to use ( Dynamic ) AngularJS Design
 
 &amp;Hybrid will not support RP emulators at this time.
 
