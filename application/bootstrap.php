@@ -54,21 +54,5 @@
     $_POST = array_merge($_POST, $HybridRegistry->requests);
     
     # Application Database Initialization.
-    $database = $HybridRegistry->config->loadFile('connection');
-    $database['type'] = isset($database['type']) ? $database['type'] : 'mysqli';
+    $HybridRegistry->database = new Library\Database\Database($HybridRegistry);
     
-    switch($database['type']) {
-        case 'mysql':
-            $HybridRegistry->database = new Library\Database_Mysql();
-            break;
-        case 'mysqli':
-            $HybridRegistry->database = new Library\Database_Mysqli();
-            break;
-        case 'pdo':
-            $HybridRegistry->database = new Library\Database_PDO();
-            break;
-        default:
-            $HybridRegistry->database = new Library\Database_Mysql();
-    }
-    
-    $HybridRegistry->database->connect($database);

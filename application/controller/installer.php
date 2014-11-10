@@ -24,19 +24,40 @@
         error_log(sprintf('[%s] &HybridCMS Authication Failure.', basename(__FILE__)));
         exit;
     }
-    
+
     /**
-     * Support Controller
-     * Cuz users need help from time to time.
+     * Installer Controller
      */
-    class Support {
+    class Installer
+    {
+        # Current Installation Action
+        protected $action = null;
+        # Supported Modules
+        protected $modules = array();
         
-        public function __construct() {
-            // TODO: IN GENERAL
-        }
+        # Configuration
+        protected $configuration = array();
         
-        public function run() {
+        public function __construct()
+        {
             
         }
         
+        public function initialize()
+        {
+            # Initialize html
+            
+            # Initialize drivers test and put test into modules var.
+            
+            # Display results
+        }
+        
+        public function setAction($action = null)
+        {
+            $this->action = $action;
+        }
+        public function getAction()
+        {
+            return $this->action;
+        }
     }

@@ -13,20 +13,26 @@
     namespace HybridCMS\Application\Controller\Helper;
     
     # Application Security Check
-    if(!defined('HybridSecure') && HybridSecure != 1) {
+    if(!defined('HybridSecure')) {
         global $config;
 
-        echo 'Sorry a internal error occurred.';
         if(isset($config, $config['domain']) == true) {
             header(sprintf('Location: http://%s/404', $config['domain']));
         }
+        
+        echo 'Sorry a internal error occurred.';
         error_log(sprintf('[%s] &HybridCMS Authication Failure.', basename(__FILE__)));
         exit;
     }
     
     class Account
     {
-        public function exists ($character) {}
+        public function user() {
+            return null;
+        }
+        public function exists ($character) {
+            
+        }
         public function banned ($character) {}
         
         public function information ($character) {}

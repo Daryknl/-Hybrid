@@ -17,12 +17,13 @@
         exit;
     }
     
-    # Application Database Connection
+    # Application Configuration
     return array(
-        'type'  => 'mysql',
+        // Application Hash Key
+        'key'   => '',
         
-        'hostname'  => '127.0.0.1',
-        'username'  => 'root',
-        'password'  => '',
-        'database'  => 'habbo'
+        'debug' => false,
+        'error' => 'hybrid.log',
+        
+        'env' => 0, // 0 = development, 1 = production
     );

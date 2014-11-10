@@ -23,10 +23,11 @@
     if(!defined('HybridSecure')) {
         global $config;
 
-        echo 'Sorry a internal error occurred.';
         if(isset($config, $config['domain']) == true) {
             header(sprintf('Location: http://%s/404', $config['domain']));
         }
+        
+        echo 'Sorry a internal error occurred.';
         error_log(sprintf('[%s] &HybridCMS Authication Failure.', basename(__FILE__)));
         exit;
     }
@@ -48,19 +49,22 @@
         
         public function __construct() {
             # Installation Check.
-            
-            # Proceed.
-        }
-        
-        /**
-         * Is HybridCMS Installed?
-         * @return boolean
-         */
-        public function checkInstallation() {
-            if(file_exists(dirname(__FILE__) . '/../storage/install.lock') == true) {
-                return true;
+            if(!file_exists(dirname(__FILE__) . '/../storage/install.lock'))
+            {
+                // no installation
+                # $installer = new Application\Controller\Installer(); 
+                # $installer->initialize();
+                # 
+                # $action = isset($_GET['action']) && in_array(strtolower($_GET['action']), array('install', 'upgrade')) ? strtolower($_GET['action']) : null;
+                # if($action !== null && $action == 'install')
+                # {
+                #    $installer->install();
+                # } else {
+                #
+                # }
+                # echo $installer;
             }
-            return false; # HybridCMS was not installed.
+            # Proceed.
         }
         
         /**
@@ -75,13 +79,21 @@
             sprintf('Please redirect to: %s://%s/install', strtolower(substr($_SERVER['SERVER_PROTOCOL'], 0, 5)) == 'https' ? 'https': 'http', $_SERVER['HTTP_HOST']);
         }
         
+        final public function loadFile($fileName)
+        {
+            if(file_exists( $inc = sprintf('%s/../config/%s.php', dirname(__FILE__), $fileName) ))
+            {
+                return $configuration [ sha1($fileName) ] = require_once($inc);
+            }
+            return array();
+        }
         /**
          * Load a configuration file.
          * @param string $fileName  - The name of the config file.
          * @return array
          * @throws \Exception
          */
-        public function loadFile($fileName) {
+        public function loadRevolutionFile($fileName) {
             $location = sprintf('%s/../config/%s.php', dirname(__FILE__), $fileName);
             
             if(is_readable($location) && file_exists($location) && !isset($this->configuration[ sha1( $fileName ) ] )) {
@@ -93,7 +105,13 @@
             return $this->configuration[ sha1( $fileName ) ];
         }
         
-        public function saveFile($fileName, $object) {
+        /**
+         * Save configuration
+         * @param type $fileName
+         * @param type $object
+         * @throws \Exception
+         */
+        public function saveRevolutionFile($fileName, $object) {
             $data = '<?php'.PHP_EOL.'namespace HybridCMS\Application\Library;if(!defined(\'HybridSecure\')){exit;} return \''.serialize($object).'\';';
             $location = sprintf('%s/../config/%s.php', dirname(__FILE__), $fileName);
             

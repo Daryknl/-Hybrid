@@ -16,10 +16,11 @@
     if(!defined('HybridSecure')) {
         global $config;
 
-        echo 'Sorry a internal error occurred.';
         if(isset($config, $config['domain']) == true) {
             header(sprintf('Location: http://%s/404', $config['domain']));
         }
+        
+        echo 'Sorry a internal error occurred.';
         error_log(sprintf('[%s] &HybridCMS Authication Failure.', basename(__FILE__)));
         exit;
     }

@@ -29,6 +29,12 @@
         protected $key = null;
         
         # Encryption Key
+        protected function retrieveKey()
+        {
+            
+        }
+        
+        # Decipated.
         public function setKey($key) {
             $this->key = $key;
         }
