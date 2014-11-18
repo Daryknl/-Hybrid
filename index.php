@@ -1,22 +1,17 @@
 <?php
-    /**
-     *	&HybridCMS
-     *	CMS (Content Management System) for Habbo Emulators.
-     *
-     *	@author     GarettMcCarty <mrgarett@gmail.com> DB:GarettisHere
-     *	@version    0.0.5
-     *	@link       http://github.com/GarettMcCarty/HybridCMS
-     *	@license    Attribution-NonCommercial 4.0 International
-     */
+/**
+ *	&HybridCMS
+ *	CMS (Content Management System) for Habbo Emulators.
+ *
+ *	@author     GarettMcCarty <mrgarett@gmail.com> DB:GarettisHere
+ *	@version    1.0.0
+ *	@link       http://github.com/GarettMcCarty/HybridCMS
+ *	@license    Attribution-NonCommercial 4.0 International
+ */
 
-    # Application Security
-    defined('HybridSecure') or define('HybridSecure', true);
+# Application Security
+define('HybridSecure', true);
 
-    # Application Bootstrap
-    require( dirname(__FILE__) . '/application/bootstrap.php' );
-
-    # Application Controller.
-    $HybridRegistry->controller = new HybridCMS\Application\Controller\Main( $HybridRegistry );
-
-    # Run Application!
-    $HybridRegistry->controller->run();
+# Application Bootstrap
+require_once(dirname(__FILE__) . '/application/bootstrap.php');
+application\bootstrap::initialize(NULL);

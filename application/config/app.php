@@ -1,29 +1,38 @@
 <?php
-    /**
-     *	&HybridCMS
-     *	CMS (Content Management System) for Habbo Emulators.
-     *
-     *	@author     GarettMcCarty <mrgarett@gmail.com> DB:GarettisHere
-     *	@version    0.0.5
-     *	@link       http://github.com/GarettMcCarty/HybridCMS
-     *	@license    Attribution-NonCommercial 4.0 International
-     */
+/**
+ *	&HybridCMS
+ *	CMS (Content Management System) for Habbo Emulators.
+ *
+ *	@author     GarettMcCarty <mrgarett@gmail.com> DB:GarettisHere
+ *	@version    1.0.0
+ *	@link       http://github.com/GarettMcCarty/HybridCMS
+ *	@license    Attribution-NonCommercial 4.0 International
+ */
 
-    # Application Namespace
-    namespace HybridCMS\Application\Config;
+namespace application\config;
+
+if(!defined('HybridSecure'))
+{
+    global $config;
     
-    # Application Security Check
-    if(!defined('HybridSecure')) {
-        exit;
+    if(isset($config, $config['domain']))
+    {
+        $location = sprintf('Location: http://%s/404', $config['domain']);
+        header($location);
     }
-    
-    # Application Configuration
-    return array(
-        // Application Hash Key
-        'key'   => '',
-        
-        'debug' => false,
-        'error' => 'hybrid.log',
-        
-        'env' => 0, // 0 = development, 1 = production
-    );
+    echo 'Sorry a internal application error has occurred.';
+    $error = sprintf('[AUTH] The file %s was denied access', basename(__FILE__));
+    error_log($error);
+    exit;
+}
+
+return array(
+    // mCrypt key for passwords
+    'key'   => '',
+    // debug
+    'debug' => false,
+    'debug.file' => 'hybrid.debug.log',
+    // errors
+    'error' => true,
+    'error.file' => 'hybrid.error.log'
+);

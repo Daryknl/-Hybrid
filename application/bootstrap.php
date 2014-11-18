@@ -1,58 +1,67 @@
 <?php
-    /**
-     *	&HybridCMS
-     *	CMS (Content Management System) for Habbo Emulators.
-     *
-     *	@author     GarettMcCarty <mrgarett@gmail.com> DB:GarettisHere
-     *	@version    0.0.5
-     *	@link       http://github.com/GarettMcCarty/HybridCMS
-     *	@license    Attribution-NonCommercial 4.0 International
-     */
+/**
+ *	&HybridCMS
+ *	CMS (Content Management System) for Habbo Emulators.
+ *
+ *	@author     GarettMcCarty <mrgarett@gmail.com> DB:GarettisHere
+ *	@version    1.0.0
+ *	@link       http://github.com/GarettMcCarty/HybridCMS
+ *	@license    Attribution-NonCommercial 4.0 International
+ */
 
-    # Application Namespace
-    namespace HybridCMS\Application;
+namespace application;
+
+if(!defined('HybridSecure'))
+{
+    global $config;
     
-    # Application Security Check
-    if(!defined('HybridSecure')) {
-        global $config;
+    if(isset($config, $config['domain']))
+    {
+        $location = sprintf('Location: http://%s/404', $config['domain']);
+        header($location);
+    }
+    echo 'Sorry a internal application error has occurred.';
+    $error = sprintf('[AUTH] The file %s was denied access', basename(__FILE__));
+    error_log($error);
+    exit;
+}
 
-        echo 'Sorry a internal error occurred.';
-        if(isset($config, $config['domain']) == true) {
-            header(sprintf('Location: http://%s/404', $config['domain']));
+class bootstrap
+{
+    protected static $registry = null;
+    
+    public static function initialize()
+    {
+        ini_set('session.hash_function', 'whirlpool');
+        if(!session_id())
+        {
+            session_start();
         }
-        error_log(sprintf('[%s] &HybridCMS Authication Failure.', basename(__FILE__)));
-        exit;
+        
+        self::initAutoloader();
+        
+        $registry = Library\Registery::getInstance();
+        
+        # Project Properties Please Don't Remove
+        $registry->author   = 'GarettisHere';
+        $registry->powered  = 'HybridCMS';
+        $registry->version  = '1.0.0';
+        $registry->license  = 'Attribution-NonCommercial 4.0 International';
+        
+        self::$registry = $registry;
     }
     
-    # Application Session
-    ini_set('session.hash_function', 'whirlpool');
-    
-    if(!session_id()) {
-        session_start();
+    private static function initAutoloader()
+    {
+        require_once(dirname(__FILE__) . '/library/autoloader.php');
+        library\autoloader::register();
     }
-    
-    # Application Autoload
-    require( dirname(__FILE__) . '/library/autoload.php' );
-    (new Library\Autoload)->register();
-    
-    # Application Registry
-    $HybridRegistry = Library\Registry::getInstance();
-    
-    $HybridRegistry->author  = 'GarettisHere';
-    $HybridRegistry->powered = 'HybridCMS';
-    $HybridRegistry->version = '1.0.0';
-    $HybridRegistry->license = 'Attribution-NonCommercial 4.0 International';
-    
-    # Application Configuration
-    $HybridRegistry->config = new Library\Configuration();
-    
-    # Application Input Layer
-    $input = file_get_contents('php://input');
-    $HybridRegistry->requests = (array) json_decode($input, true);
-    
-    # Update POST Data.
-    $_POST = array_merge($_POST, $HybridRegistry->requests);
-    
-    # Application Database Initialization.
-    $HybridRegistry->database = new Library\Database\Database($HybridRegistry);
-    
+    private static function initConfiguration()
+    {
+        return NULL;
+    }
+    private static function initDatabase()
+    {
+        return NULL;
+    }
+}

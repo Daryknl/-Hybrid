@@ -9,7 +9,7 @@
  *	@license    Attribution-NonCommercial 4.0 International
  */
 
-namespace application\model;
+namespace application\view;
 
 if(!defined('HybridSecure'))
 {
@@ -26,30 +26,7 @@ if(!defined('HybridSecure'))
     exit;
 }
 
-class Comment
+abstract class AbstractView
 {
-    protected $id;
-    protected $article;
-    protected $author;
-    protected $votes;
-    protected $timestamp;
     
-    public function __construct(array $entity)
-    {
-        $this->id        = $entity['id'];
-        $this->article   = $entity['article'];
-        $this->author    = $entity['author'];
-        $this->votes     = $entity['votes'];
-        $this->timestamp = $entity['timestamp'];
-    }
-    
-    public function setID($id)
-    {
-    
-    }
-    
-    public function getID()
-    {
-    
-    }
 }

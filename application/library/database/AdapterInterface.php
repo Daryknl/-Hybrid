@@ -9,7 +9,7 @@
  *	@license    Attribution-NonCommercial 4.0 International
  */
 
-namespace application\model;
+namespace application\library\database;
 
 if(!defined('HybridSecure'))
 {
@@ -26,30 +26,19 @@ if(!defined('HybridSecure'))
     exit;
 }
 
-class Comment
+interface AdapterInterface
 {
-    protected $id;
-    protected $article;
-    protected $author;
-    protected $votes;
-    protected $timestamp;
+    public function connect();
+    public function disconnect();
     
-    public function __construct(array $entity)
-    {
-        $this->id        = $entity['id'];
-        $this->article   = $entity['article'];
-        $this->author    = $entity['author'];
-        $this->votes     = $entity['votes'];
-        $this->timestamp = $entity['timestamp'];
-    }
+    public function query($query);
+    public function fetch();
     
-    public function setID($id)
-    {
+    public function select($table, $conditions = '', $fields = '*', $order = '', $limit = NULL, $offset = NULL);
+    public function update($table, array $data);
+    public function delete($table, $conditions = '');
     
-    }
-    
-    public function getID()
-    {
-    
-    }
+    public function getInsertID();
+    public function countRows();
+    public function getAffectedRows();
 }

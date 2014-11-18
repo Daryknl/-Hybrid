@@ -1,66 +1,64 @@
 <?php
-    /**
-     *	&HybridCMS
-     *	CMS (Content Management System) for Habbo Emulators.
-     *
-     *	@author		GarettMcCarty <mrgarett@gmail.com> DB:GarettisHere
-     *	@version	0.0.5
-     *	@link		http://github.com/GarettMcCarty/HybridCMS
-     *	@license	Attribution-NonCommercial 4.0 International
-     */
+/**
+ *	&HybridCMS
+ *	CMS (Content Management System) for Habbo Emulators.
+ *
+ *	@author     GarettMcCarty <mrgarett@gmail.com> DB:GarettisHere
+ *	@version    1.0.0
+ *	@link       http://github.com/GarettMcCarty/HybridCMS
+ *	@license    Attribution-NonCommercial 4.0 International
+ */
 
-    # Application Namespace
-    namespace HybridCMS\Application\Controller\Helper;
+namespace application\controller\helper;
+
+if(!defined('HybridSecure'))
+{
+    global $config;
     
-    # Application Security Check
-    if(!defined('HybridSecure') && HybridSecure != 1) {
-        global $config;
-
-        echo 'Sorry a internal error occurred.';
-        if(isset($config, $config['domain']) == true) {
-            header(sprintf('Location: http://%s/404', $config['domain']));
-        }
-        error_log(sprintf('[%s] &HybridCMS Authication Failure.', basename(__FILE__)));
-        exit;
+    if(isset($config, $config['domain']))
+    {
+        $location = sprintf('Location: http://%s/404', $config['domain']);
+        header($location);
     }
+    echo 'Sorry a internal application error has occurred.';
+    $error = sprintf('[AUTH] The file %s was denied access', basename(__FILE__));
+    error_log($error);
+    exit;
+}
+
+class Encryption
+{
+    protected static $secret = NULL;
+    protected static $string;
     
-    # Encyption Helper
-    class Encryption {
-        protected $key = null;
+    public static function hash($string)
+    {
+        $hmac = $this->hmac($string);
+        $salt = substr(strtr(self::create(35), '+', '.'), 0, 22);
+        $cryp = crypt($hmac, 'blowfish'.$salt);
         
-        # Encryption Key
-        protected function retrieveKey()
+        return ($cryp);
+    }
+    public static function compare($string, $hashed)
+    {
+        
+    }
+    public static function create($bytes = 128)
+    {
+        if(function_exists('openssl_random_pseudo_bytes'))
         {
-            
-        }
-        
-        # Decipated.
-        public function setKey($key) {
-            $this->key = $key;
-        }
-        
-        # Create Hash 
-        public function createHash($string) {
-            $hmac = $this->hmac($string);
-            $salt = substr(strtr($this->createKey(35), '+', '.'), 0, 22);
-            
-            return crypt($hmac, 'blowfish'.$salt);
-        }
-        # Compare Strings
-        public function compareHash($string, $hashed) {
-            $hmac = $this->hmac($string);
-            return (crypt($hmac, $hashed) == $hashed) ? true : false;
-        }
-        # Create Hash Key
-        public function createKey($bytes = 128) {
-            if(function_exists('openssl_random_pseudo_bytes')) {
-                return base64_encode(openssl_random_pseudo_bytes($bytes));
-            } else {
-                return base64_encode(mcrypt_create_iv($bytes, MCRYPT_DEV_URANDOM));
-            }
-        }
-        # Generate a keyed hash value using the HMAC method
-        public function hmac($string) {
-            return hash_hmac('sha512', $string, $this->key);
+            return base64_encode(openssl_random_pseudo_bytes($bytes));
+        } else {
+            return base64_encode(mcrypt_create_iv($bytes, MCRYPT_DEV_URANDOM));
         }
     }
+    public static function hmac($string)
+    {
+        if(self::$secret == NULL || empty(self::$secret))
+        {
+            $app = Configuration::get('app');
+            self::$secret = $app['key'];
+        }
+        return hash_mac('sha512', $string, self::$secret);
+    }
+}

@@ -10,17 +10,25 @@
      */
 
     # Application Security
-    # 1 = Internal Script, 2 = API Access       - Please use access level 2 if your unsure.
-    defined('HybridSecure') or define('HybridSecure', 2);
+    defined('HybridSecure') or define('HybridSecure', true);
 
-    require( dirname(__FILE__) . '/application/bootstrap.php' );
+    require( dirname(__FILE__) . '/../application/bootstrap.php' );
 
     # Image Data
     $image = '#';
 
     # Image Source
-    $file = isset($_GET, $_GET['src'])  ? $_GET['src']  : null;
-    $type = isset($_GET, $_GET['type']) ? $_GET['type'] : 'png';
+	$file = isset($_GET, $_GET['src'])	? filter_input(INPUT_GET, 'src') : NULL;
+	$type = isset($_GET, $_GET['type']) ? filter_input(INPUT_GET, 'type') : 'image/png';
+	
+	if(!stripos('/', $type) == true)
+	{
+		if(! getFileFormat() )
+		{
+			$type = 'image/png';
+		}
+		$type = str_ireplace(['png', 'jpg', 'jpeg', 'gif'], ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'], $type);
+	}
 
     # External Resouce?
     $external = false;
