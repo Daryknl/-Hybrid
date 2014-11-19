@@ -26,61 +26,67 @@ if(!defined('HybridSecure'))
     exit;
 }
 
-class router
+class Router
 {
-    public static function get($request, $callback)
-    {
-        $match = self::match($request, 'GET');
-    }
-    public static function post($request, $callback)
-    {
-        $match = self::match($request, 'POST');
-    }
-    public static function all($request, $callback)
-    {
-        $match = self::match($request, '*');
-        
-        if($match != NULL)
-        {
-            if(is_callable($callback))
-            {
-                $options = null;
-                return $callback($options);
-            } else {
-                // TODO: format to class call
-                // 'className@foo' : className->foo($options);
-            }
-        }
-    }
-    public static function match($request, $method)
-    {
-        if(stripos('[', $request) && stripos(']', $request))
-        {
-            
-        }
-        
-        if($_SERVER['REQUEST_METHOD'] == $method || $method == '*')
-        {
-            
-        }
-        
-        return NULL;
-    }
-}
-class routerMatchObject
-{
-    protected $request;
-    protected $options;
-    protected $match;
-    
-    public function __construct($request, $options)
-    {
-        $this->request = $request;
-        $this->options = $options;
-    }
-    
-    public function getOption()
-    {
-        return $this->options;
-    }
+	protected static $regex  = ['[string]' => '([^/]+)', '[int]' => '(\d+)'];
+	protected static $routes = [];
+	
+	// GET Helper
+	public static function GET($uri, $callback)
+	{
+		return self::addRoute('GET', $uri, $callback);
+	}
+	// POST Helper
+	public static function POST($uri, $callback)
+	{
+		return self::addRoute('POST', $uri, $callback);
+	}
+
+	public static function addRoute($method, $uri, $callback)
+	{
+		$uri = str_ireplace(array_keys(self::$regex), array_values(self::$regex), $uri);
+		self::$routes[$uri] = sprintf('~^/index.php%s$~', $uri);
+		
+		$request = filter_input(INPUT_SERVER, 'REQUEST_URI');
+		
+		if($method != filter_input(INPUT_SERVER, 'REQUEST_METHOD'))
+		{
+			return;
+		}
+		
+		if(array_key_exists($uri, self::$routes))
+		{
+			if(preg_match(self::$routes[$uri], $request, $matches) !== false)
+			{
+				if(count($matches) > 0 && $matches[0] == $request)
+				{
+					if(is_callable($callback))
+					{
+						if(isset($matches[1]))
+						{
+							echo $callback($matches[1]);
+						} else {
+							echo $callback();
+						}
+					} else {
+						if(stripos($callback, '@'))
+						{
+							$data = explode('@', $callback);
+							$controller = "\application\controller\{$data[0]}";
+							
+							if(isset($matches[1]))
+							{
+								$matches = array_shift($matches);
+								call_user_func_array(array(new $controller, $data[1]), $matches);
+							} else {
+								call_user_func(array(new $controller, $data[1]));
+							}
+						} else {
+							throw new \InvalidArgumentException('Routes must use a controller or a callable function.');
+						}
+					}
+				}
+			}
+		}
+	}
 }

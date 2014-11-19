@@ -36,5 +36,28 @@ class Character
     protected $pixels;
     
     protected $timeLastUsed;
-    protected $timeCreated;
+    protected $timeCreated; 
+    
+    public function __construct($parent, $username, $motto, $credits, $pixels, $timeLastUsed = NULL, $timeCreated = NULL)
+    {
+    
+    }
+    
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
+    }
+    public function getParent()
+    {
+        return $this->parent;
+    }
+    
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+    public function getUsername()
+    {
+        return $this->username;
+    }
 }

@@ -46,7 +46,30 @@ class JSON
     
     public static function jsonToXML($pData)
     {
-        return NULL;
+        $data = self::jsonToArray($pData);
+        
+        $xml  = new \SimpleXMLElement("<?xml version=\"1.0\"?>");
+        return $xml->asXML();
+    }
+    
+    private static function jsonToXMLConvert($data, &$xml)
+    {
+        foreach($data as $key => $value)
+        {
+            if(is_array($value))
+            {
+                if(!is_numeric($key))
+                {
+                    $subnode = $xml->addChild("$key");
+                    self::jsonToXMLConvert($value, $subnode);
+                } else {
+                    $subnode = $xml->addChild("item$key");
+                    self::jsonToXMLConvert($value, $subnode);
+                }
+            } else {
+                $xml->addChild("$key", htmlspecialchars("$value"));
+            }
+        }
     }
     
     public static function angualarGET()

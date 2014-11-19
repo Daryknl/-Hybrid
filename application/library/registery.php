@@ -26,7 +26,7 @@ if(!defined('HybridSecure'))
     exit;
 }
 
-class Registry implements \Countable
+class Registery implements \Countable
 {
     protected static $instance = NULL;
     

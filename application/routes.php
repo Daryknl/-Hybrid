@@ -9,7 +9,9 @@
  *	@license    Attribution-NonCommercial 4.0 International
  */
 
-namespace application\view;
+namespace application;
+use application\library\Router;
+use application\view\View;
 
 if(!defined('HybridSecure'))
 {
@@ -26,7 +28,9 @@ if(!defined('HybridSecure'))
     exit;
 }
 
-abstract class AbstractView
-{
-    
-}
+Router::GET('/', function() {
+    return View::build(array('title' => 'HybridCMS', 'body' => ''));
+});
+Router::GET('/about', function() {
+    return 'About Flabbo Hotel';
+});

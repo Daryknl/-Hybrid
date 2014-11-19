@@ -41,6 +41,7 @@ class autoloader
     
     public static function loader($className)
     {
+        $className = strtolower($className);
         $className = ltrim($className, '\\');
         $fileName  = '';
         $namespace = '';
