@@ -9,7 +9,7 @@
  *	@license    Attribution-NonCommercial 4.0 International
  */
 
-namespace application\model\mapper;
+namespace application\library\cache;
 
 if(!defined('HybridSecure'))
 {
@@ -31,13 +31,9 @@ if(!defined('HybridSecure'))
     exit;
 }
 
-/**
- * MapperInterface for ObjectMapping
- */
-interface MapperInterface
-{
-    public function find($id, $criteria = '');
-    public function insert($entity);
-    public function update($entity);
-    public function delete($entity);
+interface CacheDriverInterface {
+    public function create($key, $value);
+    public function read($key);
+    public function update($key, $value);
+    public function remove($key);
 }

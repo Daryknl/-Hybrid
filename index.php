@@ -14,4 +14,6 @@ define('HybridSecure', true);
 
 # Application Bootstrap
 require_once(dirname(__FILE__) . '/application/bootstrap.php');
+
+# Initialize HybridCMS
 application\bootstrap::initialize(NULL);

@@ -12,14 +12,22 @@
 namespace application\library\database;
 use application\library\Configuration;
 
+use PDO;
+use PDOException;
+
 if(!defined('HybridSecure'))
 {
-    global $config;
-    
-    if(isset($config, $config['domain']))
+    if(class_exists('Configuration', true) !== false)
     {
-        $location = sprintf('Location: http://%s/404', $config['domain']);
-        header($location);
+        try {
+            $application = Configuration::get('app');
+            if(isset($application['url']))
+            {
+                $location = sprintf('Location: %s/404', $application['url']);
+                header($location);
+                unset($application);
+            }
+        } catch(\Exception $ex) {}
     }
     echo 'Sorry a internal application error has occurred.';
     $error = sprintf('[AUTH] The file %s was denied access', basename(__FILE__));
@@ -27,34 +35,31 @@ if(!defined('HybridSecure'))
     exit;
 }
 
+/**
+ * Summary of Adapter
+ */
 class Adapter implements AdapterInterface
 {
     protected $connection;
     protected $result;
     
-    public function __construct($register)
+    public function __construct()
     {
-        if(!$register instanceof \application\library\Registry)
-        {
-            throw new \Exception('Database Adapter requires Registry Access');
-        }
-        
         Configuration::cache('connect');
         $this->connect();
     }
     
     public function connect()
     {
-         $con = Configuration::get('connect');
-         
-         
-        if(!$this->connection instanceof \PDO)
+        $con = Configuration::get('connect');
+        
+        if(!$this->connection instanceof PDO)
         {
             try {
-                $this->connection = new \PDO($this->formatDNS(), $con['username'], $con['password']);
+                $this->connection = new PDO($this->formatDNS(), $con['username'], $con['password']);
                 $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            } catch(\PDOException $ex) {
-                throw new \Exception($ex);
+            } catch(PDOException $ex) {
+                throw new \Exception($ex->getMessage(), $ex->getCode());
             }
         }
     }
@@ -74,7 +79,19 @@ class Adapter implements AdapterInterface
             $dnsString = $dns[$type]['dns'];
         }
         
-        $data = str_ireplace(['{hostname}', '{username}', '{password}', '{database}', '{port}'], [$con['hostname'], $con['username'], $con['password'], $con['database'], $con[$type]['port']], $dnsString);
+        $rules = [
+            '{hostname}' => $con['hostname'],
+            '{username}' => $con['username'],
+            '{password}' => $con['password'],
+            '{database}' => $con['database']
+        ];
+        
+        foreach($rules as $key => $value)
+        {
+            $dnsString = str_replace($key, $value, $dnsString);
+        }
+        
+        $data = str_replace('{port}', $dns[$type]['port'], $dnsString);
         
         return ($data);
     }
@@ -95,8 +112,8 @@ class Adapter implements AdapterInterface
         
         if(!$this->result = $this->connection->query($query))
         {
-            return FALSE;
             error_log('[DATABASE] >> Database Query Failed to Execute.');
+            return FALSE;
         }
         
         return $this->result;
@@ -108,6 +125,12 @@ class Adapter implements AdapterInterface
         
         if($where != '' || isset($where))
         {
+            if(is_array($where) && isset($where[1]))
+            {
+                $where = sprintf(' %s=\'%s\' ', $where[0], $where[1]);
+            } else {
+                $where = '';
+            }
             $query .= sprintf(' WHERE %s', $where);
         }
         

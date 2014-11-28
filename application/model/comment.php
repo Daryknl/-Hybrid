@@ -13,12 +13,17 @@ namespace application\model;
 
 if(!defined('HybridSecure'))
 {
-    global $config;
-    
-    if(isset($config, $config['domain']))
+    if(class_exists('Configuration', true) !== false)
     {
-        $location = sprintf('Location: http://%s/404', $config['domain']);
-        header($location);
+        try {
+            $application = Configuration::get('app');
+            if(isset($application['url']))
+            {
+                $location = sprintf('Location: %s/404', $application['url']);
+                header($location);
+                unset($application);
+            }
+        } catch(\Exception $ex) {}
     }
     echo 'Sorry a internal application error has occurred.';
     $error = sprintf('[AUTH] The file %s was denied access', basename(__FILE__));
@@ -26,6 +31,11 @@ if(!defined('HybridSecure'))
     exit;
 }
 
+/**
+ * Comment Object Model
+ * 
+ * @see Hybrid::Model
+ */
 class Comment
 {
     protected $id;
@@ -45,11 +55,37 @@ class Comment
     
     public function setID($id)
     {
-    
+        $this->id = $id;
     }
-    
     public function getID()
     {
+        return $this->id;
+    }
     
+    public function setArticle($parent)
+    {
+        $this->article = $parent;
+    }
+    public function getArticle()
+    {
+        return $this->article;
+    }
+    
+    public function setAuthor($author)
+    {
+        $this->author = $author;
+    }
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+    
+    public function setTimestamp($datetime)
+    {
+        $this->timestamp = $datetime;
+    }
+    public function getTimestamp()
+    {
+        return $this->timestamp;
     }
 }

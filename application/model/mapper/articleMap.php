@@ -33,15 +33,14 @@ if(!defined('HybridSecure'))
     exit;
 }
 
-
 /**
- * Account Database Map
+ * Article Database Map
  */
-class accountMap extends AbstractMapper
+class articleMap extends AbstractMapper
 {
     protected $entity;
-    protected $table = 'users';
-    protected $class = '\application\model\Account';
+    protected $table = 'hybrid_articles';
+    protected $class = '\application\model\Article';
     
     public function __construct(AdapterInterface $adapter)
     {
@@ -54,20 +53,10 @@ class accountMap extends AbstractMapper
         $emulator = \application\model\emulator\Emulator::fetch();
         
         # Set Emulator Table
-        $this->table = $emulator['fields']['account']['table'];
+        $this->table = $emulator['fields']['articles']['table'];
         
         
-        
-        # Create New Account Object
-        $account = new $this->class([
-            $emulator['fields']['account']['id']    => $data['id'],
-            $emulator['fields']['account']['email'] => $data['email'],
-            $emulator['fields']['account']['rank']  => $data['rank'],
-            $emulator['fields']['account']['pass']  => $data['password']
-        ]);
-
-        $this->test();
-        return ($this->entity = $account);
+        return ($this->entity = []);
     }
     
     public function toArray()

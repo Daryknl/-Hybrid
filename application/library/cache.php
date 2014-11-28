@@ -9,7 +9,7 @@
  *	@license    Attribution-NonCommercial 4.0 International
  */
 
-namespace application\model\mapper;
+namespace application\library;
 
 if(!defined('HybridSecure'))
 {
@@ -31,13 +31,35 @@ if(!defined('HybridSecure'))
     exit;
 }
 
-/**
- * MapperInterface for ObjectMapping
- */
-interface MapperInterface
-{
-    public function find($id, $criteria = '');
-    public function insert($entity);
-    public function update($entity);
-    public function delete($entity);
+class cache {
+    protected $driver = null;
+    
+    public function __construct($driver = 'WinCacheDriver')
+    {
+        $_driver = sprintf('\application\library\cache\%s', $driver);
+        
+        if(!class_exists($_driver, true))
+        {
+            $_driver = "\application\library\cache\%s\APCDriver";
+        }
+        
+        $this->driver = new $_driver;
+    }
+    
+    public function create($key, $value)
+    {
+        return $this->driver->create($key, $value);
+    }
+    public function read($key)
+    {
+        return $this->driver->read($key);
+    }
+    public function update($key, $value)
+    {
+        return $this->driver->update($key, $value);
+    }
+    public function remove($key)
+    {
+        return $this->driver->remove($key);
+    }
 }

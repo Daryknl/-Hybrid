@@ -9,7 +9,7 @@
  *	@license    Attribution-NonCommercial 4.0 International
  */
 
-namespace application\model\mapper;
+namespace application\controller;
 
 if(!defined('HybridSecure'))
 {
@@ -32,12 +32,12 @@ if(!defined('HybridSecure'))
 }
 
 /**
- * MapperInterface for ObjectMapping
+ * Installation Controller does not extends Abstract Controller.
  */
-interface MapperInterface
-{
-    public function find($id, $criteria = '');
-    public function insert($entity);
-    public function update($entity);
-    public function delete($entity);
+class Install {
+    
+    public function __construct()
+    {
+        // TODO: Installer Interface & Action.
+    }
 }

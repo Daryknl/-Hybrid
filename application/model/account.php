@@ -13,12 +13,17 @@ namespace application\model;
 
 if(!defined('HybridSecure'))
 {
-    global $config;
-    
-    if(isset($config, $config['domain']))
+    if(class_exists('Configuration', true) !== false)
     {
-        $location = sprintf('Location: http://%s/404', $config['domain']);
-        header($location);
+        try {
+            $application = Configuration::get('app');
+            if(isset($application['url']))
+            {
+                $location = sprintf('Location: %s/404', $application['url']);
+                header($location);
+                unset($application);
+            }
+        } catch(\Exception $ex) {}
     }
     echo 'Sorry a internal application error has occurred.';
     $error = sprintf('[AUTH] The file %s was denied access', basename(__FILE__));
@@ -26,6 +31,11 @@ if(!defined('HybridSecure'))
     exit;
 }
 
+/**
+ * Account Object Model
+ * 
+ * @see Hybird::Model
+ */
 class Account
 {
     protected $id;
@@ -35,9 +45,45 @@ class Account
     
     public function __construct(array $entity)
     {
-        $this->id    = $entity['id'];
-        $this->rank  = $entity['rank'];
-        $this->email = $entity['mail'];
+        $this->id       = $entity['id'];
+        $this->rank     = $entity['rank'];
+        $this->email    = $entity['mail'];
         $this->password = $entity['password'];
+    }
+    
+    public function setID($id)
+    {
+        $this->id = $id;
+    }
+    public function getID()
+    {
+        return $this->id;
+    }
+    
+    public function setRank($rank)
+    {
+        $this->rank = $rank;
+    }
+    public function getRank()
+    {
+        return $this->rank;
+    }
+    
+    public function setEmail($address)
+    {
+        $this->email = $address;
+    }
+    public function getEmail()
+    {
+        return $this->email;
+    }
+    
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+    public function getPassword()
+    {
+        return $this->password;
     }
 }

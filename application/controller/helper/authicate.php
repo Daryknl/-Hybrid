@@ -10,6 +10,8 @@
  */
 
 namespace application\controller\helper;
+use application\bootstrap;
+use PDO;
 
 if(!defined('HybridSecure'))
 {
@@ -28,8 +30,12 @@ if(!defined('HybridSecure'))
 
 class Authicate
 {
-    protected static $auth = FALSE;
+    protected static $permissions = [];
+    protected static $authicated  = FALSE;
     
+    /*!
+     * Authication Functions
+     */
     public static function Login()
     {
         if(isset($_POST['email'], $_POST['password']) || isset($_POST['username'], $_POST['password']))
@@ -57,10 +63,10 @@ class Authicate
     {
         if(session_destroy())
         {
-            self::$auth = FALSE;
+            self::$authicated = FALSE;
             return TRUE;
         }
-        return self::$aut;
+        return self::$authicated;
     }
     
     public static function Forgot()
@@ -73,7 +79,7 @@ class Authicate
 			// Email Authentication
 			$database = array();
 			$alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
-			for($i = 0; $i < 16; ++1)
+			for($i = 0; $i < 16; ++$i)
 			{
 				$x = rand(0, strlen($aplhabet) - 1);
 				$database[] = $alphabet[ $x ];
@@ -99,5 +105,66 @@ class Authicate
     public static function isAuthicated()
     {
         return (self::$auth == TRUE) ? TRUE : FALSE;
+    }
+    
+    /*!
+     * Permission Functions
+     */
+    public static function getPermissions($id)
+    {
+        $registry = bootstrap::getRegistry();
+        $role     = new Authicate();
+        
+        
+        $query = sprintf('SELECT table2.permission_desc FROM hybrid_role_permissions as table1 JOIN hybrid_permissions as table2 ON table1.permission_id = table2.permission_id WHERE table1.role_id = %d', (int)$id);
+        $statement = $registry->database->query($query);
+        
+        while($row = $statement->fetch(PDO::FETCH_ASSOC))
+        {
+            $role::addPermission( $row['permission_desc'], true );
+        }
+        
+        return $role;
+    }
+    
+    public static function addPermission($key, $value)
+    {
+        self::$permissions [$key] = $value;
+    }
+    
+    public static function hasPermission($key)
+    {
+        return isset( self::$permissions[$key] ) ? true : false;
+    }
+    
+    /*!
+     * Add or Remove Permissions
+     */
+    public static function insertRole($role)
+    {
+        $registry = bootstrap::getRegistry();
+        
+        return $registry->database->insert('hybrid_roles', array('role_name', $role));
+    }
+    public static function insertUserRole($id, $role)
+    {
+        $registry = bootstrap::getRegistry();
+        
+        return $registry->database->insert('hybird_user_role', array('user_id' => $id, 'role_id' => $role));
+    }
+    
+    public static function removeRole($role)
+    {
+        $registry = bootstrap::getRegistry();
+        
+        $query = sprintf('DELETE table1, table2, table3 FROM hybrid_roles as table1 JOIN hybrid_user_role as table2 on table1.role_id = table2.role_id JOIN hybrid_role_permissionas table3 on table1.role_id = table3.role_id WHERE table1.role_id = %d', $role);
+        return $registry->database->query($query);
+    }
+    public static function removeUserRole($role)
+    {
+        $registry = bootstrap::getRegistry();
+        
+        $query = sprintf('DELETE FROM hybrid_user_role WHERE hybrid_user = %d', $role);
+        return $registry->database->query($query);
     }
 }

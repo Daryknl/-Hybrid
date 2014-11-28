@@ -11,7 +11,6 @@
 
 namespace application;
 use application\library\Router;
-use application\view\View;
 
 if(!defined('HybridSecure'))
 {
@@ -28,9 +27,90 @@ if(!defined('HybridSecure'))
     exit;
 }
 
-Router::GET('/', function() {
-    return View::build(array('title' => 'HybridCMS', 'body' => ''));
+/**
+ * Hybird Routes
+ */
+Router::GET('/', function (){
+    // TODO: Frontpage View
 });
-Router::GET('/about', function() {
-    return 'About Flabbo Hotel';
+
+Router::GET('/login', function (){
+    // TODO: Login View
+});
+Router::POST('/login', function (){
+    // TODO: Login Action
+});
+
+Router::GET('/register', function (){
+    // TODO: Register View
+});
+Router::POST('/register', function (){
+    // TODO: Register Action
+});
+
+Router::GET('/community/[string]', function ($page){
+    # Community Page 
+    switch($page)
+    {
+        default:
+            // TODO: main community page... Hmmm
+            break;
+    }
+});
+Router::POST('/community/[string]', function ($page){
+    # Community Action
+    switch($page)
+    {
+        default:
+            // TODO: switch action based on current request
+            break;
+    }
+});
+
+Router::GET('/profile/[int]', function ($id = NULL){
+    # User Profile
+    if(is_null($id))
+    {
+        // Get Current user logged-in user id.
+    }
+    # Show Profile Page
+});
+Router::POST('/profile/[int]', function ($id = NULL){
+    # User Profile
+    if(is_null($id))
+    {
+        // Get Current user logged-in user id.
+    }
+    # Return Accounts Profile Information in JSON or XML
+});
+
+Router::GET('/admin', function (){
+    # TODO: Admin Dashboard or redirect to /admin/login
+});
+
+Router::GET('/admin/[string]', function ($page){
+    # TODO: Admin Page
+    switch($page)
+    {
+		#\application\controller\Admin::isView([string])
+        case method_exists('\application\controller\Admin', sprintf('do%sView', $page)):
+            // TODO: do controller action
+            break;
+        default:
+            // Dashboard
+            break;
+    }
+});
+Router::POST('/admin/[string]', function ($page){
+    # TODO: Admin Action
+    switch($page)
+    {
+		#\application\controller\Admin::isAction([string])
+        case method_exists('\application\controller\Admin', sprintf('do%sAction', $page)):
+            // TODO: do controller action
+            break;
+        default:
+            // Nothing
+            break;
+    }
 });

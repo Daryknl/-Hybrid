@@ -9,7 +9,8 @@
  *	@license    Attribution-NonCommercial 4.0 International
  */
 
-namespace application\model\mapper;
+namespace application\model\emulator;
+use application\model\mapper\MapperInterface;
 
 if(!defined('HybridSecure'))
 {
@@ -32,12 +33,33 @@ if(!defined('HybridSecure'))
 }
 
 /**
- * MapperInterface for ObjectMapping
+ * Summary of Emulator
  */
-interface MapperInterface
+class Emulator extends AbstractEmulator
 {
-    public function find($id, $criteria = '');
-    public function insert($entity);
-    public function update($entity);
-    public function delete($entity);
+    # This is not how Emulators will be loaded or supported this is temperary for development and testing
+    public static function fetch($emulator = NULL)
+    {
+        if(is_null($emulator) == true)
+        {
+            $app = \application\library\Configuration::get('app');
+            $emulator = $app['emu'];
+        }
+        
+        $data = NULL;
+        if(file_exists( $data = sprintf('%s/data/%.json', dirname(__FILE__), $emulator) ))
+        {
+            $data = \application\input\JSON::jsonToArray( file_get_contents($data) );
+        }
+        
+        return $data;
+    }
+    public function find($field = NULL)
+    {
+        return NULL;
+    }
+    public function send($mus = NULL)
+    {
+        return NULL;
+    }
 }

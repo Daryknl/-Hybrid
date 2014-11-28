@@ -13,12 +13,17 @@ namespace application\library;
 
 if(!defined('HybridSecure'))
 {
-    global $config;
-    
-    if(isset($config, $config['domain']))
+    if(class_exists('Configuration', true) !== false)
     {
-        $location = sprintf('Location: http://%s/404', $config['domain']);
-        header($location);
+        try {
+            $application = Configuration::get('app');
+            if(isset($application['url']))
+            {
+                $location = sprintf('Location: %s/404', $application['url']);
+                header($location);
+                unset($application);
+            }
+        } catch(\Exception $ex) {}
     }
     echo 'Sorry a internal application error has occurred.';
     $error = sprintf('[AUTH] The file %s was denied access', basename(__FILE__));
@@ -26,33 +31,59 @@ if(!defined('HybridSecure'))
     exit;
 }
 
+/**
+ * Configuration
+ * 
+ * TODO:
+ *  - Cache configuration files.
+ */
 class Configuration
 {
-    protected static $pData = array();
+    /**
+     * Cache configuration files
+     * @var aray
+     */
+    protected static $cache = null;
     
-    public static function cache($configFile)
+    public static function init()
     {
-        self::$pData[ $configFile ] = require_once(dirname(__FILE__) . '/../config/' . $configFile . '.php');
+        if(!self::$cache instanceof cache)
+        {
+            //self::$cache = new cache();
+        }
+    }
+    /**
+     * Store Configuration For the given session
+     * @param mixed $configFile 
+     */
+    public static function cache($config)
+    {
+        self::init();
+        
+        $file_location = sprintf('%s/../config/%s.php', dirname(__FILE__), $config);
+        $file_content  = require_once($file_location);
+        
+        try {
+            //$cache = self::$cache;
+            //$cache->create($config, $file_content);
+        } catch (Exception $ex) {
+            throw new Exception($ex->getMessage(), $ex->getCode());
+        }
+        return false;
     }
 
     public static function get($config)
     {
-        $file = sprintf('%/../config/%s.php', dirname(__FILE__), $config);
+        //self::init();
         
-        if(isset(self::$pData[$config]))
-        {
-            return self::$pData[$config];
-        }
-        return require_once( $file );
-    }
-    
-    public static function store($config)
-    {
-        return NULL;
-    }
-    
-    public static function create($file, $data)
-    {
-        return NULL;
+        //$cache = self::$cache;
+        $file  = sprintf('%s/../config/%s.php', dirname(__FILE__), $config);
+        
+        //if(($cached = $cache->read($config)) === false)
+        //{
+            return require( $file );
+        //}
+        
+        //return $cached;
     }
 }

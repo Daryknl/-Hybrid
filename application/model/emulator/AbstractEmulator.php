@@ -9,7 +9,8 @@
  *	@license    Attribution-NonCommercial 4.0 International
  */
 
-namespace application\model\mapper;
+namespace application\model\emulator;
+use \application\model\mapper\MapperInterface;
 
 if(!defined('HybridSecure'))
 {
@@ -31,13 +32,27 @@ if(!defined('HybridSecure'))
     exit;
 }
 
+
 /**
- * MapperInterface for ObjectMapping
+ * Summary of AbstractEmulator
  */
-interface MapperInterface
+abstract class AbstractEmulator implements EmulatorInterface
 {
-    public function find($id, $criteria = '');
-    public function insert($entity);
-    public function update($entity);
-    public function delete($entity);
+    # Emulator Object
+    protected $emulator;
+    
+    public function __construct(EmulatorInterface $emulator)
+    {
+        if(!$emulator instanceof EmulatorInterface)
+        {
+            $message = sprintf('%s must be an instance of EmulatorInterface', (string)$emulator);
+            throw new \RuntimeException($message);
+        }
+        
+        $this->emulator = $emulator;
+    }
+    
+    
+    public abstract function find($field);
+    public abstract function send($mus);
 }

@@ -13,12 +13,17 @@ namespace application\config;
 
 if(!defined('HybridSecure'))
 {
-    global $config;
-    
-    if(isset($config, $config['domain']))
+    if(class_exists('Configuration', true) !== false)
     {
-        $location = sprintf('Location: http://%s/404', $config['domain']);
-        header($location);
+        try {
+            $application = Configuration::get('app');
+            if(isset($application['url']))
+            {
+                $location = sprintf('Location: %s/404', $application['url']);
+                header($location);
+                unset($application);
+            }
+        } catch(\Exception $ex) {}
     }
     echo 'Sorry a internal application error has occurred.';
     $error = sprintf('[AUTH] The file %s was denied access', basename(__FILE__));
@@ -29,6 +34,10 @@ if(!defined('HybridSecure'))
 return array(
     // mCrypt key for passwords
     'key'   => '',
+    // emulator
+    'emu'   => 'phoenix',
+    // fall back URL
+    'url'   => 'http://127.0.0.1',
     // debug
     'debug' => false,
     'debug.file' => 'hybrid.debug.log',

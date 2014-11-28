@@ -9,7 +9,7 @@
  *	@license    Attribution-NonCommercial 4.0 International
  */
 
-namespace application\model\mapper;
+namespace application\model\emulator;
 
 if(!defined('HybridSecure'))
 {
@@ -32,12 +32,12 @@ if(!defined('HybridSecure'))
 }
 
 /**
- * MapperInterface for ObjectMapping
+ * Summary of EmulatorInterface
  */
-interface MapperInterface
+interface EmulatorInterface
 {
-    public function find($id, $criteria = '');
-    public function insert($entity);
-    public function update($entity);
-    public function delete($entity);
+    # Emulator Table
+    public function find($table);
+    # Emulator MUS
+    public function send($mus);
 }

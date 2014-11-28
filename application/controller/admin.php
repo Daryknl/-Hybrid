@@ -13,12 +13,17 @@ namespace application\controller;
 
 if(!defined('HybridSecure'))
 {
-    global $config;
-    
-    if(isset($config, $config['domain']))
+    if(class_exists('Configuration', true) !== false)
     {
-        $location = sprintf('Location: http://%s/404', $config['domain']);
-        header($location);
+        try {
+            $application = Configuration::get('app');
+            if(isset($application['url']))
+            {
+                $location = sprintf('Location: %s/404', $application['url']);
+                header($location);
+                unset($application);
+            }
+        } catch(\Exception $ex) {}
     }
     echo 'Sorry a internal application error has occurred.';
     $error = sprintf('[AUTH] The file %s was denied access', basename(__FILE__));
@@ -26,10 +31,78 @@ if(!defined('HybridSecure'))
     exit;
 }
 
+/**
+ * Summary of Admin
+ */
 class Admin extends Controller
 {
+    protected $account = NULL;
+    
     public function __construct()
     {
+        $this->account = new Account();
+    }
     
+    /**
+     * Check to see if user has admin privilage
+     */
+    private function check()
+    {
+        if($this->account->getID() != 0)
+        {
+            if($this->account->hasPrivilege('admin') == true)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    # Login
+    public function doLoginAction()
+    {
+    
+    }
+    public function doLoginView()
+    {
+    
+    }
+    
+    # articles
+    public function doArticleView()
+    {
+        # TODO: Build Article Edit View.
+    }
+    public function doArticleAction($method = 'NEW', $article_id = NULL)
+    {
+        $articlemap = \application\model\mapper\articleMap();
+        $article = null;
+        
+        switch($method)
+        {
+            case 'NEW':
+                /**
+                 * $data = [postdata];
+                 * $article = new model\Article($data);
+                 * $articleMap->createEntity($article);
+                 */
+                break;
+            case 'EDIT':
+                /**
+                 * $data = [database array]
+                 * $article = new model\Article($data);
+                 * $article->setContent($post[newContent]) ..ect.
+                 * $articleMap->updateEntity($article);
+                 */
+                break;
+            case 'REMOVE':
+                /**
+                 * $articleMap->deleteEntity($article_id);
+                 */
+                break;
+            default:
+                // Do Nothing
+                break;
+        }
     }
 }
